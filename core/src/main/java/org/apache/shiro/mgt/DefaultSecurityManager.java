@@ -272,6 +272,7 @@ public class DefaultSecurityManager extends SessionsSecurityManager {
     public Subject login(Subject subject, AuthenticationToken token) throws AuthenticationException {
         AuthenticationInfo info;
         try {
+//            这里才开始真正的认证操作, 在这个方法中定义了AuthenticationInfo对象用来接收从Realm传来的认证信息
             info = authenticate(token);
         } catch (AuthenticationException ae) {
             try {

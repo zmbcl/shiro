@@ -45,6 +45,7 @@ public abstract class AuthenticatingSecurityManager extends RealmSecurityManager
     /**
      * The internal <code>Authenticator</code> delegate instance that this SecurityManager instance will use
      * to perform all authentication operations.
+     * [ɔːθentɪ,keɪtə] n. 认证者；认证器
      */
     private Authenticator authenticator;
 
@@ -100,7 +101,12 @@ public abstract class AuthenticatingSecurityManager extends RealmSecurityManager
     }
 
     /**
+     * Delegates [ˈdɛlɪˌɡeɪts] 代表，委托，选举..为代表
+     * wrapped [ræpt] adj. 有包装的 v. 包裹；覆盖（wrap的过去分词）
      * Delegates to the wrapped {@link org.apache.shiro.authc.Authenticator Authenticator} for authentication.
+     * authenticator [ɔːθentɪ,keɪtə] n. 认证者；认证器
+     * authentication [ɔːˌθentɪˈkeɪʃn] n. 证明；鉴定；证实
+     * authenticate [ɔːˈθentɪkeɪt] vt. 鉴定；证明…是真实的
      */
     public AuthenticationInfo authenticate(AuthenticationToken token) throws AuthenticationException {
         return this.authenticator.authenticate(token);

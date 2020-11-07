@@ -60,6 +60,8 @@ import java.util.Collection;
  * @see AllSuccessfulStrategy
  * @see FirstSuccessfulStrategy
  * @since 0.1
+ * Modular [ˈmɑːdʒələr] adj. 模块化的；模数的；有标准组件的
+ * Authenticator [ɔːθentɪ,keɪtə] n. 认证者；认证器
  */
 public class ModularRealmAuthenticator extends AbstractAuthenticator {
 
@@ -171,12 +173,14 @@ public class ModularRealmAuthenticator extends AbstractAuthenticator {
      * @return the AuthenticationInfo associated with the user account corresponding to the specified {@code token}
      */
     protected AuthenticationInfo doSingleRealmAuthentication(Realm realm, AuthenticationToken token) {
+        // 判断该realm是否支持认证该token
         if (!realm.supports(token)) {
             String msg = "Realm [" + realm + "] does not support authentication token [" +
                     token + "].  Please ensure that the appropriate Realm implementation is " +
                     "configured correctly or that the realm accepts AuthenticationTokens of this type.";
             throw new UnsupportedTokenException(msg);
         }
+        // Authentication [ɔːˌθentɪˈkeɪʃn] n. 证明；鉴定；证实
         AuthenticationInfo info = realm.getAuthenticationInfo(token);
         if (info == null) {
             String msg = "Realm [" + realm + "] was unable to find account data for the " +
@@ -267,11 +271,14 @@ public class ModularRealmAuthenticator extends AbstractAuthenticator {
      *                                 for the given principal and credentials.
      */
     protected AuthenticationInfo doAuthenticate(AuthenticationToken authenticationToken) throws AuthenticationException {
+        // 判断Realm是否存在,不存在则会抛出IllegalStateException
         assertRealmsConfigured();
         Collection<Realm> realms = getRealms();
         if (realms.size() == 1) {
+            // 只有一个realms
             return doSingleRealmAuthentication(realms.iterator().next(), authenticationToken);
         } else {
+            // 有多个realms时
             return doMultiRealmAuthentication(realms, authenticationToken);
         }
     }

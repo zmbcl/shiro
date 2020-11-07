@@ -366,6 +366,7 @@ public abstract class AuthenticatingRealm extends CachingRealm implements Initia
      * @return true if this authentication realm can process the submitted token instance of the class, false otherwise.
      */
     public boolean supports(AuthenticationToken token) {
+        // Assignable [ə,saɪnəbl] adj. [经] 可分配的；可指定的；可让渡的
         return token != null && getAuthenticationTokenClass().isAssignableFrom(token.getClass());
     }
 
@@ -562,12 +563,14 @@ public abstract class AuthenticatingRealm extends CachingRealm implements Initia
      * @return the AuthenticationInfo corresponding to the given {@code token}, or {@code null} if no
      *         AuthenticationInfo could be found.
      * @throws AuthenticationException if authentication failed.
+     * Authentication [ɔːˌθentɪˈkeɪʃn] n. 证明；鉴定；证实
      */
     public final AuthenticationInfo getAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-
+        // 首先shiro会先从缓存中获取认证信息
         AuthenticationInfo info = getCachedAuthenticationInfo(token);
         if (info == null) {
             //otherwise not cached, perform the lookup:
+            // 如果没有才会继续从Realm中获取
             info = doGetAuthenticationInfo(token);
             log.debug("Looked up AuthenticationInfo [{}] from doGetAuthenticationInfo", info);
             if (token != null && info != null) {
@@ -578,6 +581,9 @@ public abstract class AuthenticatingRealm extends CachingRealm implements Initia
         }
 
         if (info != null) {
+            // shiro获取认证信息后进行认证的,进行密码匹配
+            // Credentials [krəˈdenʃlz] n. [管理] 证书；文凭；信任状（credential的复数）
+            // assert [əˈsɜːt] vt. 维护，坚持；断言；主张；声称
             assertCredentialsMatch(token, info);
         } else {
             log.debug("No AuthenticationInfo found for submitted AuthenticationToken [{}].  Returning null.", token);
@@ -593,10 +599,14 @@ public abstract class AuthenticatingRealm extends CachingRealm implements Initia
      * @param token the submitted authentication token
      * @param info  the AuthenticationInfo corresponding to the given {@code token}
      * @throws AuthenticationException if the token's credentials do not match the stored account credentials.
+     * Credentials [krəˈdenʃlz] n. [管理] 证书；文凭；信任状（credential的复数）
+     * assert [əˈsɜːt] vt. 维护，坚持；断言；主张；声称
      */
     protected void assertCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) throws AuthenticationException {
+        // 首先获取了一个CredentialsMatcher, 译为凭证匹配器
         CredentialsMatcher cm = getCredentialsMatcher();
         if (cm != null) {
+            // 认证操作，根据实现不同采用不同的方式验证
             if (!cm.doCredentialsMatch(token, info)) {
                 //not successful - throw an exception to indicate this:
                 String msg = "Submitted credentials for token [" + token + "] did not match the expected credentials.";

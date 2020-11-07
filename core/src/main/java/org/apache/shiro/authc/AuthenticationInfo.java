@@ -66,6 +66,7 @@ public interface AuthenticationInfo extends Serializable {
      * as passwords, private keys, etc.  Those should be instead returned by {@link #getCredentials() getCredentials()}.
      *
      * @return all principals associated with the corresponding Subject.
+     * Principals [ˈprɪnsəplz] n. 校长；负责人；身份
      */
     PrincipalCollection getPrincipals();
 
@@ -76,6 +77,7 @@ public interface AuthenticationInfo extends Serializable {
      * during a login attempt match exactly the credentials here in the <code>AuthenticationInfo</code> instance.
      *
      * @return the credentials associated with the corresponding Subject.
+     * Credentials [krəˈdenʃlz] n. [管理] 证书；文凭；信任状（credential的复数）
      */
     Object getCredentials();
 

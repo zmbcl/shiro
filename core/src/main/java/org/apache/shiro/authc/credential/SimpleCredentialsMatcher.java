@@ -122,6 +122,7 @@ public class SimpleCredentialsMatcher extends CodecSupport implements Credential
      * @param info  the {@code AuthenticationInfo} stored in the system matching the token principal.
      * @return {@code true} if the provided token credentials are equal to the stored account credentials,
      *         {@code false} otherwise
+     * 认证的具体操作
      */
     public boolean doCredentialsMatch(AuthenticationToken token, AuthenticationInfo info) {
         Object tokenCredentials = getCredentials(token);
