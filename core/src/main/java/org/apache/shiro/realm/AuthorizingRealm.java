@@ -319,7 +319,9 @@ public abstract class AuthorizingRealm extends AuthenticatingRealm
         if (log.isTraceEnabled()) {
             log.trace("Retrieving AuthorizationInfo for principals [" + principals + "]");
         }
-
+        // Available [əˈveɪləbl] 可用的,可得到的,可达到的;有效的
+        // Authorization [ˌɔːθəraɪˈzeɪʃn] n. 授权，认可；批准，委任
+        // 先从缓存取
         Cache<Object, AuthorizationInfo> cache = getAvailableAuthorizationCache();
         if (cache != null) {
             if (log.isTraceEnabled()) {
@@ -336,7 +338,7 @@ public abstract class AuthorizingRealm extends AuthenticatingRealm
             }
         }
 
-
+        // 缓存没有，从Realm中获取
         if (info == null) {
             // Call template method if the info was not found in a cache
             info = doGetAuthorizationInfo(principals);
@@ -346,6 +348,7 @@ public abstract class AuthorizingRealm extends AuthenticatingRealm
                     log.trace("Caching authorization info for principals: [" + principals + "].");
                 }
                 Object key = getAuthorizationCacheKey(principals);
+                // 将获取到的认证信息(图中的info对象)放入缓存,并将它继续返回
                 cache.put(key, info);
             }
         }

@@ -181,7 +181,9 @@ public abstract class CachingSessionDAO extends AbstractSessionDAO implements Ca
      * @param session Session object to create in the EIS and then cache.
      */
     public Serializable create(Session session) {
+        //这里只是生成sessionId，至于生成使用的算法可以在config中设置sessionIdGenerator
         Serializable sessionId = super.create(session);
+        //生成session并存储到cache
         cache(session, sessionId);
         return sessionId;
     }
@@ -228,10 +230,12 @@ public abstract class CachingSessionDAO extends AbstractSessionDAO implements Ca
         if (session == null || sessionId == null) {
             return;
         }
+        //创建cache，名字默认为shiro-activeSessionCache
         Cache<Serializable, Session> cache = getActiveSessionsCacheLazy();
         if (cache == null) {
             return;
         }
+        //存储到cache
         cache(session, sessionId, cache);
     }
 
@@ -244,6 +248,7 @@ public abstract class CachingSessionDAO extends AbstractSessionDAO implements Ca
      * @param cache     the cache to store the session
      */
     protected void cache(Session session, Serializable sessionId, Cache<Serializable, Session> cache) {
+        //这里调用的Ehcache的put方法，最终是存储在cache中（当然，如果你自定义了SessionDAO，那就可以存储在你指定的地方）
         cache.put(sessionId, session);
     }
 

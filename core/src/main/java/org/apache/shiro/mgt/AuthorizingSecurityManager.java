@@ -158,6 +158,7 @@ public abstract class AuthorizingSecurityManager extends AuthenticatingSecurityM
     }
 
     public boolean hasAllRoles(PrincipalCollection principals, Collection<String> roleIdentifiers) {
+        //authorizer  n. 核准人；授权人
         return this.authorizer.hasAllRoles(principals, roleIdentifiers);
     }
 

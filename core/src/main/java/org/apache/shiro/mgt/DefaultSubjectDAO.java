@@ -142,6 +142,8 @@ public class DefaultSubjectDAO implements SubjectDAO {
      * @return the same {@code Subject} passed in (a new Subject instance is not created).
      */
     public Subject save(Subject subject) {
+        //Storage [ˈstɔːrɪdʒ] n. 存储；仓库；贮藏所
+        // 默认是enabled
         if (isSessionStorageEnabled(subject)) {
             saveToSession(subject);
         } else {
@@ -161,7 +163,10 @@ public class DefaultSubjectDAO implements SubjectDAO {
      * @param subject the subject for which state will be persisted to its session.
      */
     protected void saveToSession(Subject subject) {
+        //performs [pəˈfɔːm] v. 执行；表演 vi. 执行，机器运转；表演
+        //logic [ˈlɒdʒɪk] n. 逻辑；逻辑学；逻辑性
         //performs merge logic, only updating the Subject's session if it does not match the current state:
+        //Principals n. 校长；负责人（principal的复数）
         mergePrincipals(subject);
         mergeAuthenticationState(subject);
     }
@@ -176,6 +181,7 @@ public class DefaultSubjectDAO implements SubjectDAO {
      * state.
      *
      * @param subject the Subject for which principals will potentially be merged into the Subject's session.
+     * Principals n. 校长；负责人（principal的复数）
      */
     protected void mergePrincipals(Subject subject) {
         //merge PrincipalCollection state:
@@ -199,11 +205,12 @@ public class DefaultSubjectDAO implements SubjectDAO {
         if (currentPrincipals == null || currentPrincipals.isEmpty()) {
             currentPrincipals = subject.getPrincipals();
         }
-
+        //取得session，如果不存在，并不会主动创建session
         Session session = subject.getSession(false);
 
         if (session == null) {
             if (!isEmpty(currentPrincipals)) {
+                //第一次用户访问时，会创建session，那么session是如何创建的呢？在缓存还是在DB中，请继续往下
                 session = subject.getSession();
                 session.setAttribute(DefaultSubjectContext.PRINCIPALS_SESSION_KEY, currentPrincipals);
             }

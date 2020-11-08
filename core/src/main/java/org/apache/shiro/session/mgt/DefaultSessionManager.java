@@ -174,6 +174,7 @@ public class DefaultSessionManager extends AbstractValidatingSessionManager impl
         if (log.isDebugEnabled()) {
             log.debug("Creating new EIS record for new session instance [" + session + "]");
         }
+        // 到这里大家应该看到了，你配置的SessionDAO在什么时候调用
         sessionDAO.create(session);
     }
 

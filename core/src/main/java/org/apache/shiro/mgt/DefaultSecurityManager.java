@@ -175,6 +175,7 @@ public class DefaultSecurityManager extends SessionsSecurityManager {
      * @param existing the existing {@code Subject} instance that initiated the authentication attempt
      * @return the {@code Subject} instance that represents the context and session data for the newly
      *         authenticated subject.
+     * Subject n. 主题；起因；科目；主词；（绘画、摄影等的）题材；实验对象；主语；国民；主旋律；主体；中心
      */
     protected Subject createSubject(AuthenticationToken token, AuthenticationInfo info, Subject existing) {
         SubjectContext context = createSubjectContext();
@@ -185,6 +186,7 @@ public class DefaultSecurityManager extends SessionsSecurityManager {
         if (existing != null) {
             context.setSubject(existing);
         }
+        // 此处创建Subject
         return createSubject(context);
     }
 
@@ -285,7 +287,8 @@ public class DefaultSecurityManager extends SessionsSecurityManager {
             }
             throw ae; //propagate
         }
-
+        // Subject n. 主题；起因；科目；主词；（绘画、摄影等的）题材；实验对象；主语；国民；主旋律；主体；中心
+        // 登录用户验证成功之后进行session处理
         Subject loggedIn = createSubject(token, info, subject);
 
         onSuccessfulLogin(token, info, loggedIn);
@@ -336,23 +339,32 @@ public class DefaultSecurityManager extends SessionsSecurityManager {
         SubjectContext context = copy(subjectContext);
 
         //ensure that the context has a SecurityManager instance, and if not, add one:
+        // ensure [ɪnˈʃʊr] vt. 保证，确保；使安全
         context = ensureSecurityManager(context);
 
+        //associated [əˈsəʊsieɪtɪd] adj. 关联的；联合的 v. 联系（associate的过去式和过去分词）
+        //referenced [ˈrefrənst] adj. 引用的，参考的 v. 引用（reference的过去分词）；附…以供参考
         //Resolve an associated Session (usually based on a referenced session ID), and place it in the context before
         //sending to the SubjectFactory.  The SubjectFactory should not need to know how to acquire sessions as the
         //process is often environment specific - better to shield the SF from these details:
+        //resolve [rɪˈzɑːlv] vt. 决定；溶解；使……分解；决心要做……；[主化]解析 vi. 解决；决心；分解 n. 坚决；决定要做的事
         context = resolveSession(context);
 
         //Similarly, the SubjectFactory should not require any concept of RememberMe - translate that here first
         //if possible before handing off to the SubjectFactory:
         context = resolvePrincipals(context);
-
+        // 真正创建subject的方法
         Subject subject = doCreateSubject(context);
 
+        //reference [ˈrefrəns] n. 参考，参照；涉及，提及；参考书目；介绍信；证明书 vi. 引用 vt. 引用
+        //necessary [ˈnesəsəri] adj. 必要的；必需的；必然的 n. 必需品
+        //resolved [rɪˈzɒlvd] adj. 下定决心的，坚决的 v. 解决；决定；（立法机构等）表决；分解；使（病症）消退；使（不协和音）转向协和音；（当远处物体看得更清楚时）变成；（光学仪器等）分辨（resolve 的过去式和过去分词）
+        //stored [stɔːrd] v. 储存；容纳
         //save this subject for future reference if necessary:
         //(this is needed here in case rememberMe principals were resolved and they need to be stored in the
         //session, so we don't constantly rehydrate the rememberMe PrincipalCollection on every operation).
         //Added in 1.2:
+        // 存储session
         save(subject);
 
         return subject;

@@ -32,14 +32,15 @@ import org.apache.shiro.util.CollectionUtils;
  * if the user does not have all of the roles specified.
  *
  * @since 0.9
+ * Authorization [ˌɔːθəraɪˈzeɪʃn] n. 授权，认可；批准，委任
  */
 public class RolesAuthorizationFilter extends AuthorizationFilter {
 
     //TODO - complete JavaDoc
-
+    //Access [ˈækses] n. 通道；进入；机会；使用权；探望权；（对计算机存储器的）访问；（情感）爆发；入口 v. 接近，使用；访问，存取（电脑文档）
     @SuppressWarnings({"unchecked"})
     public boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) throws IOException {
-
+        // roles是一个Set集合,里面储存了你配置文件中对你访问的url的所有角色的配置
         Subject subject = getSubject(request, response);
         String[] rolesArray = (String[]) mappedValue;
 
@@ -49,6 +50,7 @@ public class RolesAuthorizationFilter extends AuthorizationFilter {
         }
 
         Set<String> roles = CollectionUtils.asSet(rolesArray);
+        // 相关授权的方法
         return subject.hasAllRoles(roles);
     }
 

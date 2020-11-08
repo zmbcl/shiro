@@ -64,9 +64,11 @@ public class SampleRealm extends AuthorizingRealm {
         }
     }
 
-
+    // Principal [ˈprɪnsəpl] n. 首长；校长；资本；当事人
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
+        // PrincipalCollection包含了所有Realm的身份;该方法会获取第一个身份(获取到的身份和配置realm的顺序有关)
         Long userId = (Long) principals.fromRealm(getName()).iterator().next();
+        // 根据principals从数据库中获取权限信息并放入一个Set集合,并设置给SimpleAuthorizationInfo对象,将其返回
         User user = userDAO.getUser(userId);
         if( user != null ) {
             SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();

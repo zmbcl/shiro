@@ -236,7 +236,11 @@ public class DelegatingSubject implements Subject {
         }
     }
 
+    // Identifier [aɪˈdentɪfaɪər] n. 标识符，认同者；检验人，鉴定人
+    // Principals [ˈprɪnsəplz] n. 校长；负责人（principal的复数）
     public boolean hasAllRoles(Collection<String> roleIdentifiers) {
+        // this.hasPrincipals()会返回一个true,因为在用户登录后,DelegatingSubject对象的principals属性会变成用户名
+        // 再调用this.securityManager.hasAllRoles(this.getPrincipals(), roleIdentifiers), 将用户名和角色权限传入
         return hasPrincipals() && securityManager.hasAllRoles(getPrincipals(), roleIdentifiers);
     }
 
@@ -314,6 +318,7 @@ public class DelegatingSubject implements Subject {
     }
 
     public Session getSession() {
+        // 参数为true，表示不存在此session时创建
         return getSession(true);
     }
 
@@ -338,6 +343,7 @@ public class DelegatingSubject implements Subject {
 
             log.trace("Starting session for host {}", getHost());
             SessionContext sessionContext = createSessionContext();
+            // session创建，从这里再往下走（这里的securityMananger是SessionSecurityManager）
             Session session = this.securityManager.start(sessionContext);
             this.session = decorate(session);
         }

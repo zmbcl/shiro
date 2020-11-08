@@ -402,8 +402,10 @@ public class ModularRealmAuthorizer implements Authorizer, PermissionResolverAwa
      * <em>all</em> roles specified, <code>false</code> otherwise.
      */
     public boolean hasAllRoles(PrincipalCollection principals, Collection<String> roleIdentifiers) {
+        // 先断言Realm的配置
         assertRealmsConfigured();
         for (String roleIdentifier : roleIdentifiers) {
+            // 当所有角色都迭代完成,说明realm中包含了所有的角色,授权完成,return true
             if (!hasRole(principals, roleIdentifier)) {
                 return false;
             }
