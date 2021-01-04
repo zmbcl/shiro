@@ -53,6 +53,7 @@ import org.apache.shiro.subject.SubjectContext;
  *
  * @see org.apache.shiro.mgt.DefaultSecurityManager
  * @since 0.2
+ * Security [sɪˈkjʊərəti] n. 安全，安全性；保证；证券；抵押品
  */
 public interface SecurityManager extends Authenticator, Authorizer, SessionManager {
 

@@ -59,6 +59,7 @@ import org.apache.shiro.authc.AuthenticationToken;
  * @see org.apache.shiro.realm.AuthorizingRealm AuthorizingRealm
  * @see org.apache.shiro.authc.pam.ModularRealmAuthenticator ModularRealmAuthenticator
  * @since 0.1
+ * Realm [relm] n. 领域，范围；王国
  */
 public interface Realm {
 

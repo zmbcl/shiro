@@ -46,6 +46,8 @@ import org.apache.shiro.authz.Permission;
  * @see org.apache.shiro.realm.AuthorizingRealm#setPermissionResolver(PermissionResolver) AuthorizingRealm.setPermissionResolver
  * @see PermissionResolverAware PermissionResolverAware
  * @since 0.9
+ * Resolver [riː'zɒlvə] n. 溶剂；[电子] 分解器；下决心者
+ * PermissionResolver 用于解析权限字符串到 Permission 实例
  */
 public interface PermissionResolver {
 

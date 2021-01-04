@@ -35,6 +35,7 @@ package org.apache.shiro.authc;
  * @see AbstractAuthenticator AbstractAuthenticator
  * @see org.apache.shiro.authc.pam.ModularRealmAuthenticator ModularRealmAuthenticator
  * @since 0.1
+ * Authenticator 的职责是验证用户帐号
  */
 public interface Authenticator {
 
@@ -61,6 +62,8 @@ public interface Authenticator {
      * @see LockedAccountException
      * @see ConcurrentAccessException
      * @see UnknownAccountException
+     * 身份验证核心的入口点：如果验证成功，将返回 AuthenticationInfo 验证信息；此信息中包含了身份及凭证；
+     * 如果验证失败将抛出相应的 AuthenticationException 实现
      */
     public AuthenticationInfo authenticate(AuthenticationToken authenticationToken)
             throws AuthenticationException;

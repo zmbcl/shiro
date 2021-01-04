@@ -55,6 +55,7 @@ public class QuickStart {
 
         // login the subject with a username / password
         UsernamePasswordToken token = new UsernamePasswordToken("joe.coder", "password");
+        token.setRememberMe(true);
         // 认证开始
         subject.login(token);
 

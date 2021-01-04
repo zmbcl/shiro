@@ -34,6 +34,7 @@ import java.util.List;
  * {@link Realm Realm}s during an authorization operation.
  *
  * @since 0.2
+ * Modular [ˈmɒdjələr] adj. 模块化的；模数的；有标准组件的
  */
 public class ModularRealmAuthorizer implements Authorizer, PermissionResolverAware, RolePermissionResolverAware {
 

@@ -62,6 +62,7 @@ import java.util.Collection;
  * @since 0.1
  * Modular [ˈmɑːdʒələr] adj. 模块化的；模数的；有标准组件的
  * Authenticator [ɔːθentɪ,keɪtə] n. 认证者；认证器
+ * ModularRealmAuthenticator 默认使用 AtLeastOneSuccessfulStrategy 策略
  */
 public class ModularRealmAuthenticator extends AbstractAuthenticator {
 

@@ -44,6 +44,8 @@ import java.util.List;
  * so you should choose which ones to use based on your preferences and needs.
  *
  * @since 0.1
+ * Authorizer [ˈɔːθəraɪz] vt. 批准，认可；授权给；委托代替
+ * Authorizer的职责是进行授权（访问控制）
  */
 public interface Authorizer {
 

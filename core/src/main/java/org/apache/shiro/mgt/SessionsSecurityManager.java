@@ -150,6 +150,7 @@ public abstract class SessionsSecurityManager extends AuthorizingSecurityManager
 
     public Session start(SessionContext context) throws AuthorizationException {
         // 如果没有设置sessionManager，则调用默认的ServletContainerSessionManager（内存存储session）
+        // 可以通过实现DefaultWebSessionManager来自定义一个sessionmanager，接下来走到 AbstractNativeSessionManager
         return this.sessionManager.start(context);
     }
 
