@@ -51,6 +51,7 @@ public abstract class PathMatchingFilter extends AdviceFilter implements PathCon
 
     /**
      * PatternMatcher used in determining which paths to react to for a given request.
+     * 路径匹配器
      */
     protected PatternMatcher pathMatcher = new AntPathMatcher();
 
@@ -61,6 +62,9 @@ public abstract class PathMatchingFilter extends AdviceFilter implements PathCon
      * <p>To put it another way, the keys are the paths (urls) that this Filter will process.
      * <p>The values are filter-specific data that this Filter should use when processing the corresponding
      * key (path).  The values can be null if no Filter-specific config was specified for that url.
+     * 这里存的内容是 例如:
+     *  /login.jsp [anon]
+     *  /index.jsp [bar, baz]
      */
     protected Map<String, Object> appliedPaths = new LinkedHashMap<String, Object>();
 
@@ -81,6 +85,9 @@ public abstract class PathMatchingFilter extends AdviceFilter implements PathCon
      * @param path   the application context path to match for executing this filter.
      * @param config the specified for <em>this particular filter only</em> for the given <code>path</code>
      * @return this configured filter.
+     * 假设你的配置是 /user/** = user, roles[admin, foo]
+     * 如果这个类是roles path为/user/**   config为admin, foo
+     * 如果这个类是user path为/user/**  config为null
      */
     public Filter processPathConfig(String path, String config) {
         String[] values = null;
@@ -101,6 +108,9 @@ public abstract class PathMatchingFilter extends AdviceFilter implements PathCon
      *
      * @param request the incoming <code>ServletRequest</code>
      * @return the context path within the application.
+     * 获得请求路径
+     * 假设请求http://localhost/index.jsp?id=18
+     * 则返回值为/index.jsp
      */
     protected String getPathWithinApplication(ServletRequest request) {
         return WebUtils.getPathWithinApplication(WebUtils.toHttp(request));
@@ -120,6 +130,7 @@ public abstract class PathMatchingFilter extends AdviceFilter implements PathCon
      * @param request the incoming ServletRequest
      * @return <code>true</code> if the incoming <code>request</code> matches the specified <code>path</code> pattern,
      *         <code>false</code> otherwise.
+     * 请求路径与path匹配
      */
     protected boolean pathsMatch(String path, ServletRequest request) {
         String requestURI = getPathWithinApplication(request);
@@ -170,6 +181,7 @@ public abstract class PathMatchingFilter extends AdviceFilter implements PathCon
      * @return {@code true} if the filter chain is allowed to continue to execute, {@code false} if a subclass has
      *         handled the request explicitly.
      * @throws Exception if an error occurs
+     * 这个方法返回false则请求会被中断
      */
     protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
 
@@ -179,18 +191,20 @@ public abstract class PathMatchingFilter extends AdviceFilter implements PathCon
             }
             return true;
         }
-
+        // 首先进行路径匹配
         for (String path : this.appliedPaths.keySet()) {
             // If the path does match, then pass on to the subclass implementation for specific checks
             //(first match 'wins'):
             if (pathsMatch(path, request)) {
                 log.trace("Current requestURI matches pattern '{}'.  Determining filter chain execution...", path);
                 Object config = this.appliedPaths.get(path);
+                // 匹配到路径执行isFilterChainContinued
                 return isFilterChainContinued(request, response, path, config);
             }
         }
 
         //no path matched, allow the request to go through:
+        // 如果没有匹配允许执行
         return true;
     }
 
@@ -202,7 +216,7 @@ public abstract class PathMatchingFilter extends AdviceFilter implements PathCon
     @SuppressWarnings({"JavaDoc"})
     private boolean isFilterChainContinued(ServletRequest request, ServletResponse response,
                                            String path, Object pathConfig) throws Exception {
-
+        // 这里判断是否允许shiro执行 默认允许
         if (isEnabled(request, response, path, pathConfig)) { //isEnabled check added in 1.2
             if (log.isTraceEnabled()) {
                 log.trace("Filter '{}' is enabled for the current request under path '{}' with config [{}].  " +
@@ -211,6 +225,8 @@ public abstract class PathMatchingFilter extends AdviceFilter implements PathCon
             }
             //The filter is enabled for this specific request, so delegate to subclass implementations
             //so they can decide if the request should continue through the chain or not:
+            // 则执行onPreHandle,根据返回值来决定是否继续允许执行后续的filter
+            // 所有shiro-fiter都会重写此方法，如果返回false 则请求会被中断
             return onPreHandle(request, response, pathConfig);
         }
 

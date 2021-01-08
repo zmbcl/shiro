@@ -75,6 +75,7 @@ public abstract class AbstractFilter extends ServletContextSupport implements Fi
      * @param paramName the name of the {@code init-param}
      * @return the value for the named {@code init-param}, or {@code null} if there was no {@code init-param}
      *         specified by that name.
+     * 获取filter的配置参数
      */
     protected String getInitParam(String paramName) {
         FilterConfig config = getFilterConfig();
@@ -90,10 +91,13 @@ public abstract class AbstractFilter extends ServletContextSupport implements Fi
      *
      * @param filterConfig the servlet container supplied FilterConfig instance.
      * @throws javax.servlet.ServletException if {@link #onFilterConfigSet() onFilterConfigSet()} throws an Exception.
+     * filter初始化方法
      */
     public final void init(FilterConfig filterConfig) throws ServletException {
+        // 设置配置信息对象FilterConfig
         setFilterConfig(filterConfig);
         try {
+            // 初始化完毕后回调
             onFilterConfigSet();
         } catch (Exception e) {
             if (e instanceof ServletException) {

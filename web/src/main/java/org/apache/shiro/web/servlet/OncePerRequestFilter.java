@@ -55,6 +55,7 @@ public abstract class OncePerRequestFilter extends NameableFilter {
      * Suffix that gets appended to the filter name for the "already filtered" request attribute.
      *
      * @see #getAlreadyFilteredAttributeName
+     * 后缀
      */
     public static final String ALREADY_FILTERED_SUFFIX = ".FILTERED";
 
@@ -62,6 +63,7 @@ public abstract class OncePerRequestFilter extends NameableFilter {
      * Determines generally if this filter should execute or let requests fall through to the next chain element.
      *
      * @see #isEnabled()
+     * 是允许此filter处理
      */
     private boolean enabled = true; //most filters wish to execute when configured, so default to true
 
@@ -106,29 +108,36 @@ public abstract class OncePerRequestFilter extends NameableFilter {
      */
     public final void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        // 获得一个key用来标识当前request(请求)已经执行过一次doFilterInternal
         String alreadyFilteredAttributeName = getAlreadyFilteredAttributeName();
-        if ( request.getAttribute(alreadyFilteredAttributeName) != null ) {
+        // 判断是否已经执行过doFilterInternal
+        if (request.getAttribute(alreadyFilteredAttributeName) != null) {
             log.trace("Filter '{}' already executed.  Proceeding without invoking this filter.", getName());
+            // 跳过当前filter的处理，直接走后续逻辑(说白了就是脱离shiro的处理)
             filterChain.doFilter(request, response);
-        } else //noinspection deprecation
-            if (/* added in 1.2: */ !isEnabled(request, response) ||
-                /* retain backwards compatibility: */ shouldNotFilter(request) ) {
-            log.debug("Filter '{}' is not enabled for the current request.  Proceeding without invoking this filter.",
-                    getName());
-            filterChain.doFilter(request, response);
-        } else {
-            // Do invoke this filter...
-            log.trace("Filter '{}' not yet executed.  Executing now.", getName());
-            request.setAttribute(alreadyFilteredAttributeName, Boolean.TRUE);
-
-            try {
-                doFilterInternal(request, response, filterChain);
-            } finally {
-                // Once the request has finished, we're done and we don't
-                // need to mark as 'already filtered' any more.
-                request.removeAttribute(alreadyFilteredAttributeName);
-            }
         }
+        else //noinspection deprecation
+            // 判断是否允许执行doFilterInternal 默认是允许的，不走下面的逻辑
+            if (/* added in 1.2: */ !isEnabled(request, response) ||
+                    /* retain backwards compatibility: */ shouldNotFilter(request)) {
+                log.debug("Filter '{}' is not enabled for the current request.  Proceeding without invoking this filter.",
+                        getName());
+                filterChain.doFilter(request, response);
+            }
+            else {
+                // Do invoke this filter...
+                log.trace("Filter '{}' not yet executed.  Executing now.", getName());
+                // 设置标识
+                request.setAttribute(alreadyFilteredAttributeName, Boolean.TRUE);
+                // 执行doFilterInternal逻辑，该方法由子类重写来执行具体的shiro逻辑
+                try {
+                    doFilterInternal(request, response, filterChain);
+                } finally {
+                    // Once the request has finished, we're done and we don't
+                    // need to mark as 'already filtered' any more.
+                    request.removeAttribute(alreadyFilteredAttributeName);
+                }
+            }
     }
 
     /**
@@ -175,6 +184,7 @@ public abstract class OncePerRequestFilter extends NameableFilter {
         if (name == null) {
             name = getClass().getName();
         }
+        // 名称加上后缀
         return name + ALREADY_FILTERED_SUFFIX;
     }
 
@@ -206,6 +216,7 @@ public abstract class OncePerRequestFilter extends NameableFilter {
      * @param chain    the {@code FilterChain} to execute
      * @throws ServletException if there is a problem processing the request
      * @throws IOException      if there is an I/O problem processing the request
+     * 由子类重写,这个方法最多被执行一次
      */
     protected abstract void doFilterInternal(ServletRequest request, ServletResponse response, FilterChain chain)
             throws ServletException, IOException;

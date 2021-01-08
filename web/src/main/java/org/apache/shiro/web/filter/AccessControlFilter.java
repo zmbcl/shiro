@@ -39,6 +39,7 @@ public abstract class AccessControlFilter extends PathMatchingFilter {
     /**
      * Simple default login URL equal to <code>/login.jsp</code>, which can be overridden by calling the
      * {@link #setLoginUrl(String) setLoginUrl} method.
+     * 默认登录页
      */
     public static final String DEFAULT_LOGIN_URL = "/login.jsp";
 
@@ -110,6 +111,7 @@ public abstract class AccessControlFilter extends PathMatchingFilter {
      *         request should be processed by this filter's
      *         {@link #onAccessDenied(ServletRequest,ServletResponse,Object)} method instead.
      * @throws Exception if an error occurs during processing.
+     * 子类根据业务规则觉得是否中断请求
      */
     protected abstract boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception;
 
@@ -157,6 +159,7 @@ public abstract class AccessControlFilter extends PathMatchingFilter {
      *         otherwise returns the result of
      *         {@link #onAccessDenied(javax.servlet.ServletRequest, javax.servlet.ServletResponse) onAccessDenied}.
      * @throws Exception if an error occurs.
+     * 这里调用的isAccessAllowed
      */
     public boolean onPreHandle(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
         return isAccessAllowed(request, response, mappedValue) || onAccessDenied(request, response, mappedValue);
@@ -186,6 +189,7 @@ public abstract class AccessControlFilter extends PathMatchingFilter {
      * @param request  the incoming <code>ServletRequest</code>
      * @param response the outgoing <code>ServletResponse</code>
      * @throws IOException if an error occurs.
+     * 保存请求路径调转到登录页面
      */
     protected void saveRequestAndRedirectToLogin(ServletRequest request, ServletResponse response) throws IOException {
         saveRequest(request);
@@ -203,6 +207,7 @@ public abstract class AccessControlFilter extends PathMatchingFilter {
      * saveRequestAndRedirectToLogin(request,response)} directly.
      *
      * @param request the incoming ServletRequest to save for re-use later (for example, after a redirect).
+     * 保存请求路径
      */
     protected void saveRequest(ServletRequest request) {
         WebUtils.saveRequest(request);
@@ -221,6 +226,7 @@ public abstract class AccessControlFilter extends PathMatchingFilter {
      * @param request  the incoming <code>ServletRequest</code>
      * @param response the outgoing <code>ServletResponse</code>
      * @throws IOException if an error occurs.
+     * 跳转到登录页
      */
     protected void redirectToLogin(ServletRequest request, ServletResponse response) throws IOException {
         String loginUrl = getLoginUrl();

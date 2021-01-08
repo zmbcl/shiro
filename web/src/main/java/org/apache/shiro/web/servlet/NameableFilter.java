@@ -34,6 +34,7 @@ public abstract class NameableFilter extends AbstractFilter implements Nameable 
 
     /**
      * The name of this filter, unique within an application.
+     * 给filter加了名字
      */
     private String name;
 
@@ -48,8 +49,10 @@ public abstract class NameableFilter extends AbstractFilter implements Nameable 
      * @return the filter name, or {@code null} if none available
      * @see javax.servlet.GenericServlet#getServletName()
      * @see javax.servlet.FilterConfig#getFilterName()
+     * 获取名字
      */
     protected String getName() {
+        // 如果为空则返回web.xml filter-name的值
         if (this.name == null) {
             FilterConfig config = getFilterConfig();
             if (config != null) {

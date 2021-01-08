@@ -35,6 +35,7 @@ import java.io.IOException;
  * hooks.
  *
  * @since 0.9
+ * 一个AOP的类，在执行chain.doFilter(request, response); 添加了前置 后置 最终三个环绕方法.
  */
 public abstract class AdviceFilter extends OncePerRequestFilter {
 
@@ -53,6 +54,7 @@ public abstract class AdviceFilter extends OncePerRequestFilter {
      * @param response the outgoing ServletResponse
      * @return {@code true} if the filter chain should be allowed to continue, {@code false} otherwise.
      * @throws Exception if there is any error.
+     * AOP方法
      */
     protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
         return true;
@@ -71,6 +73,7 @@ public abstract class AdviceFilter extends OncePerRequestFilter {
      * @param request  the incoming ServletRequest
      * @param response the outgoing ServletResponse
      * @throws Exception if an error occurs.
+     * AOP方法
      */
     @SuppressWarnings({"UnusedDeclaration"})
     protected void postHandle(ServletRequest request, ServletResponse response) throws Exception {
@@ -89,6 +92,7 @@ public abstract class AdviceFilter extends OncePerRequestFilter {
      *                  or {@link #postHandle postHandle} execution, or {@code null} if no exception was thrown
      *                  (i.e. the chain processed successfully).
      * @throws Exception if an error occurs.
+     * AOP方法
      */
     @SuppressWarnings({"UnusedDeclaration"})
     public void afterCompletion(ServletRequest request, ServletResponse response, Exception exception) throws Exception {
@@ -127,16 +131,16 @@ public abstract class AdviceFilter extends OncePerRequestFilter {
         Exception exception = null;
 
         try {
-
+            // 执行前置AOP方法 根据返回值continueChain觉得是否继续执行chain.doFilter(request, response);
             boolean continueChain = preHandle(request, response);
             if (log.isTraceEnabled()) {
                 log.trace("Invoked preHandle method.  Continuing chain?: [" + continueChain + "]");
             }
-
+            // 如果preHandle返回true则执行
             if (continueChain) {
                 executeChain(request, response, chain);
             }
-
+            // 如果不出异常则执行postHandle
             postHandle(request, response);
             if (log.isTraceEnabled()) {
                 log.trace("Successfully invoked postHandle method");
@@ -145,6 +149,7 @@ public abstract class AdviceFilter extends OncePerRequestFilter {
         } catch (Exception e) {
             exception = e;
         } finally {
+            // 异常与否都在最后执行
             cleanup(request, response, exception);
         }
     }
@@ -169,6 +174,7 @@ public abstract class AdviceFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         Exception exception = existing;
         try {
+            // AOP方法
             afterCompletion(request, response, exception);
             if (log.isTraceEnabled()) {
                 log.trace("Successfully invoked afterCompletion method.");
@@ -181,6 +187,7 @@ public abstract class AdviceFilter extends OncePerRequestFilter {
                         "allow the original source exception to be propagated.", e);
             }
         }
+        // 如果executeChain方法出现异常则在这里抛出
         if (exception != null) {
             if (exception instanceof ServletException) {
                 throw (ServletException) exception;
