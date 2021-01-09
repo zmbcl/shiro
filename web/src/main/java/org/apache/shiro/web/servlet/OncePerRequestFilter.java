@@ -43,6 +43,12 @@ import java.io.IOException;
  * <b>NOTE</b> This class was initially borrowed from the Spring framework but has continued modifications.
  *
  * @since 0.1
+ * internal [ɪnˈtɜːnl] adj. 内部的；体内的；（机构）内部的；国内的；本身的；内心的；（大学生）本校生的 n. 内脏；内部特征
+ * filter的基类（说白了就是真正实现了Filter中的doFilter方法的类）
+ * 它用来保证在每个servlet容器上，每个请求都会被过滤一次，不会重复过滤
+ * 通过getAlreadyFilteredAttributeName()方法来鉴别请求是否已经被过滤过。默认的实现是基于具体过滤的实例名
+ * OncePerRequestFilter提供了一个实际处理过滤业务的方法doFilterInternal，并且保证每个请求只被该过滤器过滤一次
+ *
  */
 public abstract class OncePerRequestFilter extends NameableFilter {
 
@@ -111,6 +117,7 @@ public abstract class OncePerRequestFilter extends NameableFilter {
         // 获得一个key用来标识当前request(请求)已经执行过一次doFilterInternal
         String alreadyFilteredAttributeName = getAlreadyFilteredAttributeName();
         // 判断是否已经执行过doFilterInternal
+        // 判断过滤器是否已经执行过，如果执行过，调用filterChain.doFilter(request, response)直接放行，不再重复执行该过滤器的处理逻辑，直接走下一个过滤器或者通过该过滤进入到实际请求方法中
         if (request.getAttribute(alreadyFilteredAttributeName) != null) {
             log.trace("Filter '{}' already executed.  Proceeding without invoking this filter.", getName());
             // 跳过当前filter的处理，直接走后续逻辑(说白了就是脱离shiro的处理)
@@ -118,6 +125,8 @@ public abstract class OncePerRequestFilter extends NameableFilter {
         }
         else //noinspection deprecation
             // 判断是否允许执行doFilterInternal 默认是允许的，不走下面的逻辑
+            // 判断过滤器是否开启，该类有个成员变量eabled，默认为true（注释给的解释是大多数的过滤器都是希望开启的，所以默认值为true），
+            // 过滤器为开启状态，如果该过滤器没有被开启中，也同上面的逻辑一样，直接走下一个过滤器或者通过该过滤进入到实际请求方法中。
             if (/* added in 1.2: */ !isEnabled(request, response) ||
                     /* retain backwards compatibility: */ shouldNotFilter(request)) {
                 log.debug("Filter '{}' is not enabled for the current request.  Proceeding without invoking this filter.",
@@ -128,13 +137,17 @@ public abstract class OncePerRequestFilter extends NameableFilter {
                 // Do invoke this filter...
                 log.trace("Filter '{}' not yet executed.  Executing now.", getName());
                 // 设置标识
+                // 设置一个已经执行过滤器的属性名称在request中。
                 request.setAttribute(alreadyFilteredAttributeName, Boolean.TRUE);
                 // 执行doFilterInternal逻辑，该方法由子类重写来执行具体的shiro逻辑
+                // 调用doFilterInternal方法，执行真正的过滤器处理逻辑
                 try {
                     doFilterInternal(request, response, filterChain);
                 } finally {
                     // Once the request has finished, we're done and we don't
                     // need to mark as 'already filtered' any more.
+                    // 这个过滤器处理完后，将过滤器的属性名称从request中移出。
+                    // 这样如果程序执行到第2步，过滤又被调用了，它将会走到第一个if中，直接略过这个过滤器的处理，这样就保证了，每个过滤器在处理一个请求的时候只会被执行一次。
                     request.removeAttribute(alreadyFilteredAttributeName);
                 }
             }
@@ -216,6 +229,7 @@ public abstract class OncePerRequestFilter extends NameableFilter {
      * @param chain    the {@code FilterChain} to execute
      * @throws ServletException if there is a problem processing the request
      * @throws IOException      if there is an I/O problem processing the request
+     * internal [ɪnˈtɜːnl] adj. 内部的；体内的；（机构）内部的；国内的；本身的；内心的；（大学生）本校生的 n. 内脏；内部特征
      * 由子类重写,这个方法最多被执行一次
      */
     protected abstract void doFilterInternal(ServletRequest request, ServletResponse response, FilterChain chain)

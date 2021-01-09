@@ -32,7 +32,7 @@ import javax.servlet.ServletException;
  * FilterChain execution logic (the
  * {@link #doFilter(javax.servlet.ServletRequest, javax.servlet.ServletResponse, javax.servlet.FilterChain)} method
  * is left to subclasses.
- *
+ * AbstractFilter只做了一些基本的初始化，并没有实现filter中的doFilter方法
  * @since 1.0
  */
 public abstract class AbstractFilter extends ServletContextSupport implements Filter {

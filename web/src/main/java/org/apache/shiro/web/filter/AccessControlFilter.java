@@ -33,6 +33,11 @@ import java.io.IOException;
  * which is used by many subclasses as the behavior when a user is unauthenticated.
  *
  * @since 0.9
+ * 如果用户没有认证（即登录）那么这个过滤器就是控制访问资源和用户重定向到登录页面的过滤器父类。
+ * 当一个用户没有认证（即登录）时，可以通过saveRequestAndRedirectToLogin这个方法，重定向到登录页。
+ *
+ * 总结：AccessControlfilter中的onPreHandle处理真正的拦截逻辑，isAccessAllowed方法验证用户是否登录，onAccessDenied处理用户没登录后的逻辑，
+ * 在这个过滤器中并没有给出isAccessAllowed和onAccessDenied方法的实现，下一步得去子类中看，目前只能通过文档的注释去了解这些方法大概会执行什么样的操作。
  */
 public abstract class AccessControlFilter extends PathMatchingFilter {
 
@@ -111,6 +116,8 @@ public abstract class AccessControlFilter extends PathMatchingFilter {
      *         request should be processed by this filter's
      *         {@link #onAccessDenied(ServletRequest,ServletResponse,Object)} method instead.
      * @throws Exception if an error occurs during processing.
+     * access [ˈækses] n. 通道；进入；机会；使用权；探望权；（对计算机存储器的）访问；（情感）爆发；入口 v. 接近，使用；访问，存取（电脑文档）
+     * 即isAccessAllowed返回true表示用户已经登录过，false表示用户还未登录
      * 子类根据业务规则觉得是否中断请求
      */
     protected abstract boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception;
@@ -130,6 +137,10 @@ public abstract class AccessControlFilter extends PathMatchingFilter {
      *         handle/render the response directly.
      * @throws Exception if there is an error processing the request.
      * @since 1.0
+     * access [ˈækses] n. 通道；进入；机会；使用权；探望权；（对计算机存储器的）访问；（情感）爆发；入口 v. 接近，使用；访问，存取（电脑文档）
+     * denied [dɪ'naɪd] v. 拒绝；拒签（deny的过去式）
+     * onAccessDenied即登录验证在isAccessAllowed方法中被拒绝以后调用，其中参数mappedValue可以通过配置获取到，也可以是null。
+     * 这个方法的委托方法
      */
     protected boolean onAccessDenied(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
         return onAccessDenied(request, response);
@@ -162,6 +173,10 @@ public abstract class AccessControlFilter extends PathMatchingFilter {
      * 这里调用的isAccessAllowed
      */
     public boolean onPreHandle(ServletRequest request, ServletResponse response, Object mappedValue) throws Exception {
+        // isAccessAllowed如果请求允许正常处理，则返回true。否则返回false由方法onAccessDenied进行处理请求。
+        // 即isAccessAllowed返回true表示用户已经登录过，false表示用户还未登录
+        // access [ˈækses] n. 通道；进入；机会；使用权；探望权；（对计算机存储器的）访问；（情感）爆发；入口 v. 接近，使用；访问，存取（电脑文档）
+        // denied [dɪ'naɪd] v. 拒绝；拒签（deny的过去式）
         return isAccessAllowed(request, response, mappedValue) || onAccessDenied(request, response, mappedValue);
     }
 

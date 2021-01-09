@@ -35,12 +35,21 @@ import java.util.Arrays;
  * based on the incoming request.
  *
  * @since 0.9
+ * 该类会尝试基于用户的请求，自动去执行一些身份认证
+ * 该类没有实现onAccessDenied方法。而是提供了一些登录，创建用户和登录成功或失败后的重定向跳转等方法。
  */
 public abstract class AuthenticatingFilter extends AuthenticationFilter {
     public static final String PERMISSIVE = "permissive";
 
     //TODO - complete JavaDoc
 
+    /**
+     * 登录
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception
+     */
     protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
         AuthenticationToken token = createToken(request, response);
         if (token == null) {
@@ -51,8 +60,10 @@ public abstract class AuthenticatingFilter extends AuthenticationFilter {
         try {
             Subject subject = getSubject(request, response);
             subject.login(token);
+            // 如果登录成功执行onLoginSuccess（这个代码，可以走子类的实现）
             return onLoginSuccess(token, subject, request, response);
         } catch (AuthenticationException e) {
+            // 如果登录失败执行onLoginFailure（这个代码，可以走子类的实现）
             return onLoginFailure(token, e, request, response);
         }
     }

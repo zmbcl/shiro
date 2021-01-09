@@ -36,6 +36,9 @@ import java.io.IOException;
  *
  * @since 0.9
  * 一个AOP的类，在执行chain.doFilter(request, response); 添加了前置 后置 最终三个环绕方法.
+ * 这个过滤器，类似于开启了AOP环绕通知，提供了preHandle,postHandle和afterCompletion三个方法
+ * AdviceFilter提供了类似于AOP环绕通知式的编程方式，其处理拦截的逻辑是在preHandle方法中完成的。
+ * preHandle方法返回true和false代表了通过过滤，请求可以到达用户的请求地址和过滤器拦截掉了用户的请求
  */
 public abstract class AdviceFilter extends OncePerRequestFilter {
 
@@ -54,6 +57,7 @@ public abstract class AdviceFilter extends OncePerRequestFilter {
      * @param response the outgoing ServletResponse
      * @return {@code true} if the filter chain should be allowed to continue, {@code false} otherwise.
      * @throws Exception if there is any error.
+     * handle [ˈhændl] v. （用手）触摸；以手（或前臂）触球；操纵（车辆）；（车辆）按特定方式作出反应；处理；对付（某人或某事）；有办法应付；n. （门的）把手；柄；（织物等的）手感；
      * AOP方法
      */
     protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
@@ -73,6 +77,7 @@ public abstract class AdviceFilter extends OncePerRequestFilter {
      * @param request  the incoming ServletRequest
      * @param response the outgoing ServletResponse
      * @throws Exception if an error occurs.
+     * handle [ˈhændl] v. （用手）触摸；以手（或前臂）触球；操纵（车辆）；（车辆）按特定方式作出反应；处理；对付（某人或某事）；有办法应付；n. （门的）把手；柄；（织物等的）手感；
      * AOP方法
      */
     @SuppressWarnings({"UnusedDeclaration"})
@@ -124,6 +129,7 @@ public abstract class AdviceFilter extends OncePerRequestFilter {
      * @param chain    the filter chain to execute
      * @throws ServletException if a servlet-related error occurs
      * @throws IOException      if an IO error occurs
+     * internal [ɪnˈtɜːnl] adj. 内部的；体内的；（机构）内部的；国内的；本身的；内心的；（大学生）本校生的 n. 内脏；内部特征
      */
     public void doFilterInternal(ServletRequest request, ServletResponse response, FilterChain chain)
             throws ServletException, IOException {
@@ -131,12 +137,16 @@ public abstract class AdviceFilter extends OncePerRequestFilter {
         Exception exception = null;
 
         try {
+            // handle [ˈhændl] v. （用手）触摸；以手（或前臂）触球；操纵（车辆）；（车辆）按特定方式作出反应；处理；对付（某人或某事）；有办法应付；n. （门的）把手；柄；（织物等的）手感；
             // 执行前置AOP方法 根据返回值continueChain觉得是否继续执行chain.doFilter(request, response);
             boolean continueChain = preHandle(request, response);
             if (log.isTraceEnabled()) {
                 log.trace("Invoked preHandle method.  Continuing chain?: [" + continueChain + "]");
             }
             // 如果preHandle返回true则执行
+            // executeChain方法中的实现为：chain.doFilter(request, response);
+            // 所以如果preHandle方法返回false，则说明过滤器不会执行chain.doFilter，意味着请求被拦截掉了，不会进入到用户请求的地址上去。
+            // 如果为true，表示过滤器放行了过滤的逻辑通过
             if (continueChain) {
                 executeChain(request, response, chain);
             }

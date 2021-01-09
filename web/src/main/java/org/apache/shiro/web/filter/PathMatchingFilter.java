@@ -39,6 +39,9 @@ import static org.apache.shiro.util.StringUtils.split;
  * <p>Base class for Filters that will process only specified paths and allow all others to pass through.</p>
  *
  * @since 0.9
+ * 这个过滤器会处理指定的请求路径，和对其他路径的请求放行。
+ * 打个比方：如果配置如：/hello=authc,意味着，用户请求/hello时，这时的authc过滤就会对这个请求拦截并进行过滤逻辑处理，如果一个用户请求是/word，则不会对此请求过滤
+ * PathMatchingFilter对配置了URL请求拦截的地址进行过滤器过滤，对没有匹配拦截的URL请求直接放行，不进行拦截。如果请求需要过滤，则处理过滤的逻辑由子类实现onPreHandle完成
  */
 public abstract class PathMatchingFilter extends AdviceFilter implements PathConfigProcessor {
 
@@ -65,6 +68,8 @@ public abstract class PathMatchingFilter extends AdviceFilter implements PathCon
      * 这里存的内容是 例如:
      *  /login.jsp [anon]
      *  /index.jsp [bar, baz]
+     *  这里的appliedPaths是一个地址过滤器的映射map
+     *  key存放的是请求的URL，value是对应该URL处理的Filter过滤器，这个value也可以是空值
      */
     protected Map<String, Object> appliedPaths = new LinkedHashMap<String, Object>();
 
@@ -184,7 +189,8 @@ public abstract class PathMatchingFilter extends AdviceFilter implements PathCon
      * 这个方法返回false则请求会被中断
      */
     protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
-
+        // 判断appliedPaths为空，则放行，不作拦截请求的处理（这里的appliedPaths是一个地址过滤器的映射map）
+        // key存放的是请求的URL，value是对应该URL处理的Filter过滤器，这个value也可以是空值
         if (this.appliedPaths == null || this.appliedPaths.isEmpty()) {
             if (log.isTraceEnabled()) {
                 log.trace("appliedPaths property is null or empty.  This Filter will passthrough immediately.");
@@ -198,7 +204,7 @@ public abstract class PathMatchingFilter extends AdviceFilter implements PathCon
             if (pathsMatch(path, request)) {
                 log.trace("Current requestURI matches pattern '{}'.  Determining filter chain execution...", path);
                 Object config = this.appliedPaths.get(path);
-                // 匹配到路径执行isFilterChainContinued
+                // 如果用户的请求与配置中拦截的请求匹配，则会调用isFilterChainContinued方法进行下一步处理
                 return isFilterChainContinued(request, response, path, config);
             }
         }
@@ -216,7 +222,7 @@ public abstract class PathMatchingFilter extends AdviceFilter implements PathCon
     @SuppressWarnings({"JavaDoc"})
     private boolean isFilterChainContinued(ServletRequest request, ServletResponse response,
                                            String path, Object pathConfig) throws Exception {
-        // 这里判断是否允许shiro执行 默认允许
+        // 如果拦截器是开启的，则调用方法onPreHandle进行拦截处理，默认允许
         if (isEnabled(request, response, path, pathConfig)) { //isEnabled check added in 1.2
             if (log.isTraceEnabled()) {
                 log.trace("Filter '{}' is enabled for the current request under path '{}' with config [{}].  " +

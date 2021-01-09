@@ -27,7 +27,8 @@ import javax.servlet.FilterConfig;
  * {@link #getName()}/{@link #setName(String)} methods.  If no name is specified, the name of the filter will
  * default to the name given to it in {@code web.xml} (the {@code FilterConfig}'s
  * {@link javax.servlet.FilterConfig#getFilterName() filterName}).
- *
+ * 允许通过getName和setName方式给过滤器命名。如果没有给过滤器命名，那么默认使用web.xml中定义的命名
+ * 该类可以理解为给过滤器命名用的，也没有实现filter中的doFilter方法
  * @since 1.0
  */
 public abstract class NameableFilter extends AbstractFilter implements Nameable {

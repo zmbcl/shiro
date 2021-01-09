@@ -31,6 +31,9 @@ import javax.servlet.ServletResponse;
  * specific logic for unauthenticated requests.
  *
  * @since 0.9
+ * 需要对当前用户认证的过滤器的基类，封装了一些检查用户是否在系统中已经验证过的逻辑，子类需要对未验证的请求执行特定逻辑
+ * 这个类实现了isAccessAllowed的逻辑，而它的子类AuthenticationFilter实现了onAccessDenied的逻辑
+ * 总结：AuthenticationFilter实现了isAccessAllowed方法，如果用户已登录，那么过滤器将其直接放行，如果用户没有登录，那么再由其子类中onAccessDenied方法处理后续逻辑
  */
 public abstract class AuthenticationFilter extends AccessControlFilter {
 
@@ -77,6 +80,7 @@ public abstract class AuthenticationFilter extends AccessControlFilter {
      * @return true if the subject is authenticated; false if the subject is unauthenticated
      */
     protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
+        // 取出当前用户，然后返回当前用户是否已认证
         Subject subject = getSubject(request, response);
         return subject.isAuthenticated() && subject.getPrincipal() != null;
     }
